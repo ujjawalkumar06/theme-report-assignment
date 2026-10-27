@@ -4,7 +4,7 @@ Playwright + TypeScript automation for the OomniEye staging assignment. It valid
 
 **Application:** https://base-application-stage.oomnieye.com
 **Stack:** Playwright 1.64.1 · TypeScript 5.7 · Node.js 22 · Chromium
-**Test result (latest run):** 12 passed — 9 scenarios passing, 3 expected failures that reproduce documented defects (`test.fail`).
+**Test result (latest run):** 16 tests — 13 passing, 3 expected failures that reproduce documented defects (`test.fail`).
 **Repository:** https://github.com/ujjawalkumar06/theme-report-assignment (public)
 
 ---
@@ -13,11 +13,12 @@ Playwright + TypeScript automation for the OomniEye staging assignment. It valid
 
 | Area | Coverage |
 |---|---|
-| Theme application | All six presets discovered: Corporate Blue, Emerald, Indigo Violet, Graphite, Ocean Teal, Amber; light/dark modes |
+| Theme application | All six presets × light/dark modes (documented tokens), custom brand colours, saved themes, reset to defaults |
 | Persistence | Hard reload, SPA navigation Dashboard ↔ Report, new tab after the change |
 | Cross-module consistency | Dashboard vs Report fingerprint (`data-theme-mode`, `--page-bg`, `--text-main`, `--primary`, `--secondary`, card/border tokens) |
 | Report Module UI | Table header/body, toolbar, filter dialog, body background, controls |
 | Negative / edge | Unsupported preset, unsupported mode, failed preference write, first-visit baseline |
+| Report Module options | Every toolbar/row/pagination/New User option exercised; functional Report flows documented as manual cases |
 | Accessibility | Accent text contrast in light mode |
 | Evidence | Failed-write screenshot/state, blank-screen screenshot, low-contrast screenshot |
 
@@ -139,7 +140,7 @@ theme-report-assignment/
 ## 6. Execution summary
 
 ```
-Running 12 tests using 1 worker
+Running 16 tests using 1 worker
 
 ✓ EDGE-01  first visit without stored preferences renders a consistent theme
 ✓ TH-08a   unsupported persisted preset does not break the Report Module
@@ -153,8 +154,12 @@ Running 12 tests using 1 worker
 ✓ TH-05    selecting a second theme replaces the previous selection in the Report Module
 ✓ TH-06    a new tab opened after the change applies the persisted theme
 ✓ TH-07    Report Module surfaces, text and controls stay readable and themed
+✓ TH-09    every supported preset applies its documented tokens in both modes
+✓ TH-10    a custom brand colour applies and persists
+✓ TH-11    a custom theme can be saved and applied again
+✓ TH-12    Reset to defaults restores Emerald light and clears customisations
 
-12 passed (including 3 expected failures)
+16 passed (13 passing + 3 expected failures)
 ```
 
 Artifacts: `playwright-report/index.html` (open with `npm run report`), traces/video/screenshots under `test-results/`, defect evidence under `docs/evidence/`.
@@ -168,6 +173,7 @@ Artifacts: `playwright-report/index.html` (open with `npm run report`), traces/v
 | DEF-03 | **High** | An unsupported persisted theme **mode** crashes hydration (`Cannot read properties of undefined (reading 'disabled')`) and renders a blank screen until storage is cleared. |
 | DEF-02 | Medium | Emerald light mode uses the raw accent `#10B981` for headings/breadcrumbs → ≈ 2.54:1 on white (WCAG AA requires 4.5:1). |
 | DEF-01 | Low | A failed `localStorage` write is silent: UI applies the new theme, storage keeps the old one, and the theme reverts on reload. |
+| DEF-04 | Low | Sort → `Clear all` does not close the Sort panel (contrary to its accessible name) and keeps the applied sort until an explicit Save. |
 
 Full reproduction, expected/actual, evidence and RCA: `docs/defect-report.md`.
 
@@ -204,8 +210,9 @@ Full reproduction, expected/actual, evidence and RCA: `docs/defect-report.md`.
 1. Fix DEF-03 (validate/coerce persisted theme state, add error boundary) — highest risk.
 2. Fix DEF-02 by deriving accessible accent text tokens and adding a contrast gate for every preset × mode.
 3. Fix DEF-01 by handling persistence failures explicitly.
-4. Add Firefox/WebKit projects and a CI job; publish the HTML report as an artifact.
-5. Add cross-tab synchronisation if live updates are a product requirement.
+4. Align the Sort `Clear all` behaviour/label (DEF-04) and add functional Report tests (search/sort/filter/export) to CI.
+5. Add Firefox/WebKit projects and a CI job; publish the HTML report as an artifact.
+6. Add cross-tab synchronisation if live updates are a product requirement.
 
 ---
 

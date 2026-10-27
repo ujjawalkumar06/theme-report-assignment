@@ -159,3 +159,69 @@ No test IDs (`data-testid`) are exposed by the app; role/name/title/text locator
 | DEF-03 | Unsupported persisted mode blanks the app | High |
 
 Details, reproduction and RCA: `docs/defect-report.md`.
+
+---
+
+## 9. Extended UI inventory (every option exercised)
+
+### 9.1 Theme Studio — sections and controls
+
+| Section | Options observed |
+|---|---|
+| Theme Settings | Tabs **Presets** (6 presets), **My Themes**, **Mode** (light/dark); quick `Switch to light/dark`; `Reset to defaults` |
+| Colour Settings | Tabs **Brand** (Brand Color, Secondary/Accent, Highlight Color), **Text** (heading colours H1–H6, primary/secondary text), **Status** (Success/Warning/Info/Error + surface overrides) |
+| Typography | Body Font (Roboto, Inter, DM Sans, Manrope, Jakarta, Nunito), Heading Font, custom font upload (.woff2/.ttf/.otf), Heading Text (H1–H4 size/weight), Body Text (size/line-height/weight) |
+| Cards | Style (Soft/Floating, shadow depth), Header, Nested, Tint |
+| Tables | Rows (density, dividers), Columns (density, dividers), Cells (alignment), Styling (header background, striping); switches preview to Orders |
+| Surface & Shape | Shape (Sharp/Rounded/Round + exact radius, density), Effects (spacing, button case, status chips) |
+| Notifications | Placement (Top Center/Top Right/Bottom Left/Bottom Right), Behaviour (width, auto-dismiss); preview switches to Operations |
+| Login Screen | Brand image, logo, panel colour, login preview |
+
+Preview pane: **Dashboard, Operations, Cameras, Reports, Orders, Components**; zoom `Fit (%)` with manual zoom options. Selecting Tables switches the preview to Orders; Notifications to Operations; Login Screen to Login.
+
+### 9.2 My Themes lifecycle
+
+- `+ Save` is **disabled** while the active theme is an unmodified preset, enabled after any customisation.
+- Saving opens a **Save theme** dialog with a required `Theme name`; validation shows `Name required`.
+- Saved row actions (`⋮`): **Edit, Rename, Download, Delete**. Clicking the row applies the theme.
+- Rename dialog pre-fills the current name; Delete asks `Delete theme …? This cannot be undone.`
+- `↑ Import` accepts a `.theme.json` file (`{ "name": …, "snap": { … } }`); `⤓ Download` exports that schema.
+- Applying a saved theme sets `settings.presetId` to its `cust…` id and restores all captured settings (mode, colours, typography, tables, notifications, login).
+
+### 9.3 Reset to defaults contract
+
+`Reset to defaults` opens a confirmation: **“Reset everything?”** — it reverts preset, mode, brand colours, logo, typography, cards, surface, notifications and login screen to the **default Emerald / Light** theme. `Cancel` leaves state unchanged; saved themes are preserved.
+
+### 9.4 Report Module options
+
+| Option | Observed behaviour |
+|---|---|
+| View dropdown | Personal Views → `Default View` (favourite, more actions) + `Create New Report View` (name, description, 13 column checkboxes, Create/Cancel) |
+| Search | Expands `Search data...`; live filter on Enter (e.g. `Ishaan` → 50 results); clear restores 1000 |
+| Sort | `Sort columns` panel: up to 5 levels, 13 columns, Ascending/Descending, `Clear all`; closing with changes asks **Save changes / Discard changes / Cancel** |
+| Filter | `Filter columns` panel: `+ Add condition`, `+ Add group` (after a condition), column + operator + value, `Clear all` |
+| Show/Hide Columns | `All (13)` + per-column checkboxes |
+| List / Grid | Grid replaces the table with cards (initials, name, id, status, contact, department, country, title) |
+| More actions | Export, Grouping, Audit History, Scheduled Reports, Info |
+| Export | Export Report dialog: formats **PDF, Excel (.xlsx), JSON**, report view, summary (rows/columns/estimated size) |
+| Grouping | `Group configuration` → Add Group Level → Select a column |
+| Audit History | Event list (view switches, user, relative time) with pagination |
+| Scheduled Reports | Empty state `No schedules yet` + `New schedule` |
+| Row actions | View, Edit, Duplicate, Delete |
+| Pagination | First/Previous/Next/Last, page input (1–67), rows per page 10/15/25/50/100; 1000 rows, 15/page |
+| New User | `Add User Details` dialog: Full Name, Username, Email, Phone, Department, Role, Status, Title, Territory, Continent, Country, State/Province |
+
+### 9.5 Header / global controls
+
+- Header quick toggle (`Switch to Light/Dark Mode`), Fullscreen, Global Settings, Notifications, Account (Edit Profile / Sign Out).
+- Global Settings tabs: **Header** (logo, company name/caption typography, header background), **Customer Profile** (customer logo, name/caption, text colour), **Footer** (powered-by image, caption, copyright, links, visibility), **Sidebar** (colour, start expanded, auto-hide, icons, widths 260/68).
+- Notifications panel: Mentions, View all, Unread (5), paginated list.
+- Help panel: Dashboard/Page tabs and contextual help items.
+
+## 10. Additional defect found during extended exploration
+
+| ID | Summary | Severity |
+|---|---|---|
+| DEF-04 | `Clear all` in the Sort panel does not close the panel (contrary to its accessible name) and does not remove the applied sort until an explicit Save | Low |
+
+See `docs/defect-report.md`.

@@ -192,4 +192,115 @@ test.describe('Theme update & Report Module validation', () => {
       await expect(app.report.firstRow, 'Report data should remain visible').toBeVisible();
     }
   });
+
+  test('TH-09 - every supported preset applies its documented tokens in both modes', async ({ app }) => {
+    const presets = Object.values(PRESETS);
+    const modes: ThemeMode[] = ['dark', 'light'];
+
+    await app.themeStudio.open();
+    await app.themeStudio.ensureSettingsExpanded();
+
+    for (const preset of presets) {
+      await app.themeStudio.selectPreset(preset);
+
+      for (const mode of modes) {
+        await app.themeStudio.setMode(mode);
+        const snapshot = await readThemeSnapshot(app.page);
+
+        expect(snapshot.presetId, `${preset.display}: preset should be persisted`).toBe(preset.key);
+        expect(snapshot.mode, `${preset.display}/${mode}: mode should be applied`).toBe(mode);
+        expect(
+          normalizeColor(snapshot.primary),
+          `${preset.display}/${mode}: --primary should match the preset`,
+        ).toBe(normalizeColor(preset.resolved[mode].primary));
+        expect(
+          normalizeColor(snapshot.secondary),
+          `${preset.display}/${mode}: --secondary should match the preset`,
+        ).toBe(normalizeColor(preset.resolved[mode].secondary));
+        expect(normalizeColor(snapshot.pageBg), `${preset.display}/${mode}: --page-bg should match`).toBe(
+          normalizeColor(MODE_TOKENS[mode].pageBg),
+        );
+        expect(normalizeColor(snapshot.textMain), `${preset.display}/${mode}: --text-main should match`).toBe(
+          normalizeColor(MODE_TOKENS[mode].textMain),
+        );
+      }
+    }
+
+    await app.themeStudio.close('report');
+    await app.report.expectLoaded();
+    await assertThemeApplied(app.page, presets[presets.length - 1], 'light');
+  });
+
+  test('TH-10 - a custom brand colour applies and persists', async ({ app }) => {
+    await app.themeStudio.open();
+    await app.themeStudio.selectPreset(PRESETS.emerald);
+    await app.themeStudio.setMode('light');
+    await app.themeStudio.setBrandPrimaryColor('#123456');
+
+    const custom = await readThemeSnapshot(app.page);
+    expect(custom.presetId, 'Customising a preset should mark the theme as custom').toBe('custom');
+    expect(normalizeColor(custom.primary), 'Custom primary colour should be applied live').toBe('#123456');
+
+    await app.themeStudio.close('report');
+    await app.report.expectLoaded();
+
+    const afterClose = await readThemeSnapshot(app.page);
+    expect(normalizeColor(afterClose.primary), 'Report should use the custom primary colour').toBe('#123456');
+
+    await app.page.reload();
+    await app.report.expectLoaded();
+    const afterReload = await readThemeSnapshot(app.page);
+    expect(afterReload.presetId, 'Custom theme identifier should survive a reload').toBe('custom');
+    expect(afterReload.storedPrimaryHex?.toLowerCase(), 'Custom hex should be persisted').toBe('#123456');
+    expect(normalizeColor(afterReload.primary), 'Custom primary colour should survive a reload').toBe('#123456');
+  });
+
+  test('TH-11 - a custom theme can be saved and applied again', async ({ app }) => {
+    await app.themeStudio.open();
+    await app.themeStudio.selectPreset(PRESETS.emerald);
+    await app.themeStudio.setMode('light');
+    await app.themeStudio.setBrandPrimaryColor('#123456');
+    await app.themeStudio.saveCurrentTheme('Automation Theme');
+
+    // Reopen Theme Studio so the saved theme is loaded from a clean editor state.
+    await app.themeStudio.close('report');
+    await app.report.expectLoaded();
+    await app.themeStudio.open();
+
+    // Move away to a stock preset, then re-apply the saved custom theme.
+    await app.themeStudio.selectPreset(PRESETS.corporate);
+    await app.themeStudio.setMode('dark');
+    await app.themeStudio.applySavedTheme('Automation Theme');
+
+    const applied = await readThemeSnapshot(app.page);
+    expect(applied.presetId, 'Applying a saved theme should reactivate its custom id').toMatch(/^cust/);
+    expect(normalizeColor(applied.primary), 'Saved brand colour should be restored').toBe('#123456');
+    expect(applied.mode, 'Saved mode should be restored').toBe('light');
+
+    await app.themeStudio.close('report');
+    await app.report.expectLoaded();
+    await app.page.reload();
+    await app.report.expectLoaded();
+
+    const persisted = await readThemeSnapshot(app.page);
+    expect(normalizeColor(persisted.primary), 'Saved theme should survive reload').toBe('#123456');
+  });
+
+  test('TH-12 - Reset to defaults restores Emerald light and clears customisations', async ({ app }) => {
+    await app.themeStudio.open();
+    await app.themeStudio.selectPreset(PRESETS.amber);
+    await app.themeStudio.setMode('dark');
+    await app.themeStudio.setBrandPrimaryColor('#123456');
+
+    await app.themeStudio.resetToDefaults();
+
+    const reset = await readThemeSnapshot(app.page);
+    expect(reset.presetId, 'Reset should restore the documented default preset').toBe('emerald');
+    expect(reset.mode, 'Reset should restore the documented default mode').toBe('light');
+    expect(normalizeColor(reset.primary), 'Reset should restore the Emerald primary colour').toBe('#10b981');
+
+    await app.themeStudio.close('report');
+    await app.report.expectLoaded();
+    await assertThemeApplied(app.page, PRESETS.emerald, 'light');
+  });
 });

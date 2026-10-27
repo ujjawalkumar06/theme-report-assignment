@@ -136,6 +136,50 @@ Raw state: `docs/evidence/DEF-01-observations.json`
 
 ---
 
+## DEF-04 — Sort `Clear all` does not close the panel or clear the applied sort immediately
+
+| Field | Value |
+|---|---|
+| **ID** | DEF-04 |
+| **Severity** | Low |
+| **Priority** | P4 |
+| **Component** | Report Module / Sort panel |
+| **Test** | Manual (MAN-17); evidence captured during exploration |
+| **Status** | Open |
+
+**Preconditions:** Report Module; no sort applied.
+
+**Steps to reproduce:**
+1. Click `Sort` → add a sort level: `Full name` / `Ascending`.
+2. Close the panel and choose `Save changes`; confirm the table is sorted by Full name.
+3. Re-open `Sort` and click `Clear all`.
+4. Observe the panel and the table.
+5. Try to click a toolbar control (for example `Filter`) while the panel is in this state.
+
+**Expected:** the accessible name of the control is *“Removes all applied sorting and closes this panel”* — the panel should close and the applied sort should be removed immediately (or the control should be labelled and behave as “clear draft” while keeping the panel open).
+
+**Actual:**
+- `Clear all` removes the draft sort levels but **leaves the Sort panel open**.
+- The table **remains sorted** by the previously applied sort until the user closes the panel and chooses `Save changes`.
+- While the panel is open it continues to block toolbar clicks (normal for a modal, but contrary to the control's stated behaviour).
+- Closing after `Clear all` still shows the `Unsaved changes` prompt; `Save changes` then clears the sort.
+
+**Evidence:**
+![DEF-04](evidence/DEF-04-sort-clear-all-panel-open.png)
+
+**Impact:** Low — confusing UX and a misleading accessible name; no data loss. A keyboard/screen-reader user is told the panel will close and the sort will be removed, but neither happens.
+
+**Root-cause analysis:** `Clear all` mutates only the editor's draft state. The applied sort is committed by a separate save/close transaction. The button's `aria-label` (and its help text) describes the committed outcome, so the label and the behaviour disagree.
+
+**Recommended fix:**
+1. Decide the intended contract and make label + behaviour match:
+   - Option A: `Clear all` clears the draft **and** commits + closes (single action).
+   - Option B: rename to `Clear draft`, keep the panel open, and show that changes are not yet applied.
+2. If the panel stays open, ensure focus/aria state makes the “unsaved” state explicit and prevent the invisible panel area from blocking unrelated controls.
+3. Add a functional test for sort apply → clear → save/close.
+
+---
+
 ## Observations that are not defects
 
 | Observation | Assessment |

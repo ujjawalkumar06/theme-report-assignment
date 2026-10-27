@@ -1,117 +1,127 @@
 # Test scenarios and test cases
 
-**Legend:** ✅ passing · ⚠️ expected failure (defect reproduced, marked with Playwright `test.fail`) · ❌ failing (not expected)
+**Scope:** theme application, persistence, cross-module consistency and readability in the Report Module — plus every Report Module and Theme Studio option exercised during exploration. Theme-critical paths are automated; functional Report Module flows and advanced theme editors are documented as manual cases (out of the 4–6h automation scope).
 
-| ID | Scenario | Type | Automated | Result |
+**Legend:** ✅ passed · ⚠️ expected failure reproducing a defect (`test.fail`) · 📝 manual case
+
+---
+
+## 1. Test scenarios (high level)
+
+| ID | Scenario | Covers |
+|---|---|---|
+| TS-01 | Theme selection applies immediately and consistently across Dashboard and Report | TC-01…TC-05, TC-08 |
+| TS-02 | Theme persists across reload, SPA navigation and new tabs | TC-03, TC-04, TC-06, TC-12 |
+| TS-03 | Customisation and saved themes work end-to-end | TC-09, TC-10, TC-11 |
+| TS-04 | Report Module surfaces, controls and text remain readable and themed | TC-07, TC-15 |
+| TS-05 | Negative/edge theme states are handled safely | TC-13, TC-14, TC-16 |
+| TS-06 | Report Module functional options behave correctly | MAN-01…MAN-13 |
+| TS-07 | Advanced Theme Studio editors apply and persist | MAN-14, MAN-15 |
+| TS-08 | Header/global surfaces respect the theme | MAN-16 |
+| TS-09 | Sort panel `Clear all` lifecycle | MAN-17 (DEF-04) |
+
+---
+
+## 2. Automated test cases
+
+| ID | Scenario | Title | Automated test | Result |
 |---|---|---|---|---|
-| TH-01 | Change theme from Dashboard | Functional / positive | `tests/theme-report.spec.ts` | ✅ |
-| TH-02 | Open Report Module after changing theme | Functional / cross-module | `tests/theme-report.spec.ts` | ✅ |
-| TH-03 | Refresh Report Module | Persistence | `tests/theme-report.spec.ts` | ✅ |
-| TH-04 | Navigate Dashboard → Report → Dashboard | Persistence / navigation | `tests/theme-report.spec.ts` | ✅ |
-| TH-05 | Change theme again and reopen Report Module | Functional / latest-wins | `tests/theme-report.spec.ts` | ✅ |
-| TH-06 | Open Report Module in a new tab after the change | Persistence / session scope | `tests/theme-report.spec.ts` | ✅ |
-| TH-07 | Inspect key Report Module UI elements | Readability / consistency | `tests/theme-report.spec.ts` | ✅ |
-| TH-08a | Unsupported persisted preset | Negative | `tests/theme-edge.spec.ts` | ✅ |
-| TH-08b | Failed preference update | Negative / fault injection | `tests/theme-edge.spec.ts` | ⚠️ DEF-01 |
-| TH-08c | Unsupported persisted mode | Negative / fault injection | `tests/theme-edge.spec.ts` | ⚠️ DEF-03 |
-| EDGE-01 | First visit with no stored preferences | Baseline | `tests/theme-edge.spec.ts` | ✅ |
-| ACC-01 | Accent text contrast in light mode | Accessibility | `tests/theme-edge.spec.ts` | ⚠️ DEF-02 |
+| TC-01 | TS-01 | Change theme from Dashboard (Indigo Violet / Light) | `theme-report.spec.ts` → TH-01 | ✅ |
+| TC-02 | TS-01 | Report Module reflects Dashboard theme (Corporate Blue / Dark) | → TH-02 | ✅ |
+| TC-03 | TS-02 | Theme survives a hard refresh of Report | → TH-03 | ✅ |
+| TC-04 | TS-01/02 | Dashboard → Report → Dashboard keeps theme | → TH-04 | ✅ |
+| TC-05 | TS-01 | Second theme selection replaces the first | → TH-05 | ✅ |
+| TC-06 | TS-02 | New tab after the change inherits the persisted theme | → TH-06 | ✅ |
+| TC-07 | TS-04 | Report table/toolbar/filter dialog are themed and readable | → TH-07 | ✅ |
+| TC-08 | TS-01 | All 6 presets × light/dark resolve documented tokens | → TH-09 | ✅ |
+| TC-09 | TS-03 | Custom brand colour applies and survives reload | → TH-10 | ✅ |
+| TC-10 | TS-03 | Custom theme can be saved via My Themes and re-applied | → TH-11 | ✅ |
+| TC-11 | TS-03 | Reset to defaults restores Emerald / Light | → TH-12 | ✅ |
+| TC-12 | TS-02 | First visit without stored preferences is consistent | `theme-edge.spec.ts` → EDGE-01 | ✅ |
+| TC-13 | TS-05 | Unsupported persisted preset fails safe | → TH-08a | ✅ |
+| TC-14 | TS-05 | Failed preference write (DEF-01) | → TH-08b | ⚠️ |
+| TC-15 | TS-04 | Accent text contrast in light mode (DEF-02) | → DEF-02 | ⚠️ |
+| TC-16 | TS-05 | Unsupported persisted mode (DEF-03) | → DEF-03 | ⚠️ |
+
+**Execution summary:** 16 tests — 13 passed, 3 expected failures reproducing DEF-01/02/03.
+
+### Detailed automated cases
+
+| ID | Preconditions | Steps | Expected |
+|---|---|---|---|
+| TC-01 | Signed in, Dashboard | Theme Studio → Indigo Violet → Light → return to Dashboard | `data-theme-mode=light`, `--primary=#A97BFF`, persisted `indigo`/`light` |
+| TC-02 | Theme Corporate Blue / Dark | Capture Dashboard fingerprint → open Report | Same mode/tokens; body bg = `--page-bg`; table header accent-tinted |
+| TC-03 | Corporate Blue / Dark, Report | Hard reload | Theme unchanged after reload |
+| TC-04 | Corporate Blue / Dark, Dashboard | Dashboard → Report → Dashboard | Theme fingerprint identical at each step |
+| TC-05 | Corporate Blue / Dark | Select Emerald / Light → return to Report | Latest selection wins (`emerald`, `light`, `#10B981`) |
+| TC-06 | Corporate Blue / Dark | New tab → sign in → open Report | Persisted theme applied in the new tab |
+| TC-07 | Corporate Blue / Dark and Emerald / Light | Assert table text colour, header surface/contrast, toolbar controls, filter dialog tokens | Themed surfaces; primary text ≥ 4.5:1; controls enabled |
+| TC-08 | Any | Select each of 6 presets and both modes | `presetId`, `--primary`, `--secondary`, `--page-bg`, `--text-main` match documented values |
+| TC-09 | Emerald / Light | Colour Settings → Brand → set `#123456`; close; reload | `presetId=custom`, hex and resolved primary persist |
+| TC-10 | Emerald / Light | Customise → Save as “Automation Theme” → switch to Corporate/Dark → apply saved theme → reload | Saved preset id/colour/mode restored and persisted |
+| TC-11 | Amber / Dark | Customise → Reset to defaults → confirm | Emerald / Light, `--primary=#10B981`, customisations cleared |
+| TC-12 | Fresh context | Sign in → open Report without changing theme | Concrete mode + consistent tokens; Report renders |
+| TC-13 | Theme applied | `presetId=unsupported-preset` → reload | App renders, mode/background consistent, controls usable |
+| TC-14 | Theme applied | Make `localStorage.setItem` throw → toggle mode | Expected: no unsaved UI state. Actual: UI/theme diverge silently → DEF-01 |
+| TC-15 | Emerald / Light | Measure breadcrumb and filter heading contrast | Expected ≥ 4.5:1. Actual ≈ 2.54:1 → DEF-02 |
+| TC-16 | Theme applied | `mode=sepia` → reload | Expected fallback. Actual: blank screen + `TypeError` → DEF-03 |
 
 ---
 
-## TH-01 — Change theme from Dashboard
+## 3. Manual test cases — Report Module options
 
-**Preconditions:** signed in, Dashboard open, default theme.
-**Steps:**
-1. Sidebar → Theme Studio.
-2. Expand Theme Settings, select **Indigo Violet**.
-3. Set mode **Light**.
-4. Leave Theme Studio (navigate to Dashboard).
+These require functional assertions beyond the theme assignment scope; they are documented so the coverage is explicit and repeatable.
 
-**Expected:** `data-theme-mode="light"`, `--primary=#A97BFF`, `--page-bg=#ffffff`, `localStorage.settings.presetId="indigo"`, `mode="light"`, Dashboard renders with the new theme.
-**Actual:** Pass. Header toggle now offers `Switch to Dark Mode`; stored and resolved values match.
+| ID | Area | Steps | Expected |
+|---|---|---|---|
+| MAN-01 | View dropdown | Click `Default View` → inspect Personal Views → `Create New Report View` → fill name/description/columns → Cancel | Menu lists Default View; creation form validates and cancels cleanly |
+| MAN-02 | Search | Click Search → type `Ishaan` + Enter → clear | Result set narrows to 50, count `1–15 of 50`; clearing restores `1–15 of 1000` |
+| MAN-03 | Sort | Sort → Add Sort Level → Full name / Ascending → Close → `Save changes`; reopen → Clear all → Close → Save | Column order applied after Save; Clear all + Save restores default order |
+| MAN-04 | Filter | Filter → Add condition → choose column/operator/value; Add group; Clear all | Condition row appears; group enabled after a condition; clearing removes conditions |
+| MAN-05 | Show/Hide Columns | Open columns panel → toggle a column / `All (13)` | Table columns update; all/none controls work |
+| MAN-06 | List/Grid | Switch to Grid view → back to List | Cards render with identity/contact/details; table returns |
+| MAN-07 | Export | More actions → Export → choose PDF / Excel (.xlsx) / JSON → Cancel | Dialog shows format, view, row/column counts, estimated size; cancel closes |
+| MAN-08 | Grouping | More actions → Grouping → Add Group Level → select column | Group level added; save/discard flow behaves like Sort |
+| MAN-09 | Audit History | More actions → Audit History | Event list shows view switches/user/time with pagination |
+| MAN-10 | Scheduled Reports | More actions → Scheduled Reports | Empty state `No schedules yet`; `New schedule` available |
+| MAN-11 | Row actions | First row → action button → View/Edit/Duplicate/Delete | Correct action opens; delete asks for confirmation |
+| MAN-12 | Pagination | Next, Last, page input, rows per page | Page 2 = `16–30`, page 67 = `991–1000`; rows-per-page 10/15/25/50/100 |
+| MAN-13 | New User | Click `New User` | `Add User Details` dialog: name, username, email, phone, department, role, status, title, territory, continent, country, state/province |
+| MAN-17 | Sort `Clear all` | Apply a sort → reopen Sort → `Clear all` | **DEF-04:** panel stays open (despite name saying it closes); applied sort remains until Save |
 
-## TH-02 — Report Module reflects the selected theme
+## 4. Manual test cases — advanced theme options
 
-**Preconditions:** theme = Corporate Blue / Dark.
-**Steps:** capture Dashboard theme fingerprint → sidebar → Report Builder.
-
-**Expected:** Report Module uses the same `data-theme-mode`, `--page-bg`, `--text-main`, `--primary`, `--secondary`, card/border tokens; body background follows `--page-bg`; table header is accent-tinted (not transparent).
-**Actual:** Pass. Fingerprints identical across modules.
-
-## TH-03 — Refresh Report Module
-
-**Steps:** open Report with Corporate Blue / Dark → hard reload → assert theme.
-
-**Expected:** theme survives reload; same preset, mode, tokens and body background.
-**Actual:** Pass.
-
-## TH-04 — Dashboard → Report → Dashboard
-
-**Steps:** start on Dashboard → click Report Builder → click Dashboard → assert at each step.
-
-**Expected:** no unexpected revert on either module.
-**Actual:** Pass. Theme fingerprint stable through both transitions.
-
-## TH-05 — Select a second theme and reopen Report
-
-**Steps:** Corporate Blue / Dark → Report → select **Emerald / Light** → return to Report.
-
-**Expected:** latest selection wins (`presetId="emerald"`, `mode="light"`, `--primary=#10B981`).
-**Actual:** Pass.
-
-## TH-06 — New tab after the change
-
-**Steps:** Corporate Blue / Dark → open a new tab → sign in (sessionStorage is tab-scoped) → open Report.
-
-**Expected:** new tab uses the persisted theme (localStorage is shared across tabs of the same origin/profile).
-**Actual:** Pass. The new tab requires re-authentication; the theme is already applied on the login screen and after login.
-
-## TH-07 — Key Report Module UI elements
-
-**Steps:** for Corporate Blue / Dark and Emerald / Light:
-1. Assert table cell colour equals `--text-main`.
-2. Assert table header has a non-transparent accent surface and ≥ 4.5:1 text contrast.
-3. Assert Search / Filter / Sort / Show-Hide Columns are visible and enabled.
-4. Open the Filter dialog: panel text equals `--text-main`, heading colour resolves against the card surface.
-
-**Expected:** themed surfaces, readable primary text, usable controls, dialog follows the theme.
-**Actual:** Pass for the assertions above. A separate accessibility probe (ACC-01) found the accent heading can fall below 4.5:1 in light presets → DEF-02.
-
-## TH-08 — Negative / edge cases
-
-### TH-08a — Unsupported persisted preset (pass)
-`presetId="unsupported-preset"`, valid mode, hard reload.
-**Expected:** app remains usable with a consistent fallback.
-**Actual:** Pass — Report renders, mode and background tokens stay consistent, accent still resolves.
-
-### TH-08b — Failed preference update (DEF-01)
-`Storage.prototype.setItem` is replaced with a throwing stub, then the header mode toggle is used.
-**Expected:** the failed write is surfaced or the UI does not apply an unsaved preference; UI and storage stay consistent.
-**Actual:** ⚠️ UI switches to light, storage remains `dark`; no user feedback; a reload silently reverts. See DEF-01.
-
-### TH-08c — Unsupported persisted mode (DEF-03)
-`mode="sepia"`, hard reload.
-**Expected:** validate/fallback to a supported mode; app remains usable.
-**Actual:** ⚠️ Uncaught `TypeError: Cannot read properties of undefined (reading 'disabled')`; `#root` is empty (blank white screen). See DEF-03.
-
-## EDGE-01 — First visit without stored preferences
-
-**Steps:** fresh context → sign in → open Report without changing theme.
-**Expected:** a concrete mode and internally consistent tokens.
-**Actual:** Pass. The default theme renders; the storage key is not written until the first change.
-
-## ACC-01 — Accent text contrast (DEF-02)
-
-**Steps:** Emerald / Light → Report → measure breadcrumb colour vs `--page-bg`; open Filter → measure `Filter columns` colour vs `--bg-card`.
-**Expected:** ≥ 4.5:1 (WCAG AA normal text).
-**Actual:** ⚠️ ≈ 2.54:1 for both. See DEF-02.
+| ID | Area | Steps | Expected |
+|---|---|---|---|
+| MAN-14 | Colour Settings | Brand/Text/Status tabs: change primary, secondary, heading/body text, status colours | Changes apply live to preview and app; persist |
+| MAN-14 | Typography | Change body/heading font, H1–H4 sizes/weights, body size/line-height; upload font | Typography CSS variables update; custom font accepted |
+| MAN-14 | Cards | Style Soft/Floating, shadow depth, header, nested, tint | Card surfaces/shadows update; persists |
+| MAN-14 | Tables | Rows/Columns/Cells/Styling (density, dividers, alignment, header, stripes) | Table rendering and CSS variables update; preview switches to Orders |
+| MAN-14 | Surface & Shape | Radius Sharp/Rounded/Round, exact px, density, effects | Radius/density tokens update |
+| MAN-14 | Notifications | Placement (4 corners), behaviour (width/auto-dismiss) | Toast position/width/dismissal update; preview switches to Operations |
+| MAN-14 | Login Screen | Brand image, logo, panel colour | Login preview updates; settings persist |
+| MAN-15 | My Themes | Save (name required) → Rename → Download → Import → Edit → Delete → Cancel delete | Save/rename/delete/import/export work; delete requires confirmation; saved themes persist |
+| MAN-16 | Global/header | Global Settings tabs (Header/Customer Profile/Footer/Sidebar), Notifications, Account, Help, fullscreen | Branding/theme surfaces update; menus and panels open/close correctly |
 
 ---
 
-## Coverage notes
+## 5. Traceability
 
-- **Positive paths:** TH-01…TH-07 cover preset change, mode change, cross-module consistency, reload, SPA navigation, latest-wins and new-tab persistence.
-- **Negative/edge:** unsupported preset, unsupported mode, failed persistence write, first-visit baseline.
-- **Fault injection:** localStorage write failure; persisted-state corruption via localStorage.
-- **Not automated:** pixel-perfect rendering of gradients/video, OS colour-profile differences, cross-browser engines (only Chromium project configured; Firefox/WebKit can be enabled in `playwright.config.ts`), server-side/account-level preference sync (not implemented by the app), full WCAG audit of every screen.
+| Scenario | Automated cases | Manual cases |
+|---|---|---|
+| TS-01 Theme consistency | TC-01…TC-05, TC-08 | — |
+| TS-02 Persistence | TC-03, TC-04, TC-06, TC-12 | — |
+| TS-03 Customisation/saved themes | TC-09, TC-10, TC-11 | MAN-15 |
+| TS-04 Readability | TC-07, TC-15 | MAN-14 (visual) |
+| TS-05 Negative/edge | TC-13, TC-14, TC-16 | — |
+| TS-06 Report options | — | MAN-01…MAN-13 |
+| TS-07 Advanced theme editors | — | MAN-14, MAN-15 |
+| TS-08 Global surfaces | — | MAN-16 |
+| TS-09 Sort clear-all | — | MAN-17 / DEF-04 |
+
+## 6. Coverage notes
+
+- **Automated:** theme application, all presets × modes, persistence (reload/SPA/new tab), custom colour, saved-theme re-apply, reset-to-defaults, Report readability, unsupported preset/mode, failed persistence write, accent contrast.
+- **Manual (documented):** functional Report Module flows (view/search/sort/filter/columns/grid/export/grouping/audit/schedules/row actions/pagination/New User), advanced Theme Studio editors, My Themes management beyond save/apply, and global branding.
+- **Not automated / out of scope:** pixel-perfect rendering of gradients/video, OS colour profiles, cross-browser engines (Chromium only configured), server-side preference sync (not implemented), full WCAG audit of every screen, destructive actions (delete user/theme) beyond cancel paths.
+- **Confirmed defects:** DEF-01 (silent persistence failure), DEF-02 (light-mode accent contrast), DEF-03 (unsupported mode blank screen), DEF-04 (Sort `Clear all` panel/label mismatch). See `docs/defect-report.md`.

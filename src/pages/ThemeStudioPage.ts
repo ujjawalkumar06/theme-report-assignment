@@ -38,8 +38,14 @@ export class ThemeStudioPage extends BasePage {
   }
 
   async ensureSettingsExpanded(): Promise<void> {
-    if ((await this.presets.count()) === 0) {
+    // The section may be collapsed, or expanded on another tab (My Themes / Mode).
+    const presetsTab = this.page.getByRole('button', { name: /Ready-made colour themes/ });
+    if ((await presetsTab.count()) === 0) {
       await this.settingsHeader.click();
+      await expect(presetsTab, 'Theme Settings tabs should expand').toBeVisible();
+    }
+    if ((await this.presets.count()) === 0) {
+      await presetsTab.click();
     }
     await expect(this.presets.first(), 'Theme preset list should be visible').toBeVisible();
   }
@@ -86,5 +92,80 @@ export class ThemeStudioPage extends BasePage {
     await expect(this.page, 'Leaving Theme Studio should restore the report or dashboard route').not.toHaveURL(
       /themeStudio=true/,
     );
+  }
+
+  /** Changes the brand primary colour (Theme Settings → Colour Settings → Brand). */
+  async setBrandPrimaryColor(hex: string): Promise<void> {
+    if ((await this.page.locator('input[type="color"]:visible').count()) === 0) {
+      await this.page.getByRole('button', { name: /^Colour Settings/ }).first().click();
+    }
+    await this.page.getByRole('button', { name: /Core brand colours/ }).click();
+
+    const input = this.page.locator('input[type="color"]:visible').first();
+    await input.evaluate((element, value) => {
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set;
+      setter?.call(element, value);
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+    }, hex);
+
+    await expect
+      .poll(async () => (await readThemeSnapshot(this.page)).storedPrimaryHex?.toLowerCase(), {
+        message: `Custom primary colour should be persisted as ${hex}`,
+      })
+      .toBe(hex.toLowerCase());
+  }
+
+  /** Opens the My Themes tab, expanding Theme Settings when needed. */
+  async openMyThemes(): Promise<void> {
+    const myThemesTab = this.page.getByRole('button', { name: /Your saved custom themes/ });
+    if ((await myThemesTab.count()) === 0) {
+      await this.settingsHeader.click();
+      await expect(myThemesTab, 'Theme Settings tabs should expand').toBeVisible();
+    }
+    await myThemesTab.click();
+    await expect(this.page.getByRole('button', { name: /\+ Save/ }).first(), 'My Themes tab should open').toBeVisible();
+  }
+
+  /** Saves the current customisations as a named theme (My Themes → + Save). */
+  async saveCurrentTheme(name: string): Promise<void> {
+    await this.openMyThemes();
+
+    const save = this.page.getByRole('button', { name: /\+ Save/ }).first();
+    await expect(save, 'Save should be enabled once the theme is customised').toBeEnabled();
+    await save.click();
+
+    const dialog = this.page.getByRole('dialog').filter({ hasText: 'Save theme' });
+    await expect(dialog, 'Save theme dialog should open').toBeVisible();
+    await dialog.locator('input[type="text"]').first().fill(name);
+    await dialog.getByRole('button', { name: /^save$/i }).click();
+
+    await expect(
+      this.page.locator('[title="Apply this saved theme"]').filter({ hasText: name }).first(),
+      `Saved theme "${name}" should appear in My Themes`,
+    ).toBeVisible();
+  }
+
+  /** Applies a saved theme by clicking its row in My Themes. */
+  async applySavedTheme(name: string): Promise<void> {
+    await this.openMyThemes();
+    const row = this.page.locator('[title="Apply this saved theme"]').filter({ hasText: name }).first();
+    await expect(row, `Saved theme "${name}" should be listed`).toBeVisible();
+    await row.click();
+  }
+
+  /** Opens Reset to defaults and confirms the destructive action. */
+  async resetToDefaults(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Reset to defaults' }).first().click();
+
+    const dialog = this.page.getByRole('dialog').filter({ hasText: 'Reset everything?' });
+    await expect(dialog, 'Reset confirmation should be shown').toBeVisible();
+    await dialog.getByRole('button', { name: /^reset to defaults$/i }).click();
+
+    await expect
+      .poll(async () => (await readThemeSnapshot(this.page)).presetId, {
+        message: 'Reset should restore the default Emerald preset',
+      })
+      .toBe('emerald');
   }
 }
