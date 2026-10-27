@@ -1,0 +1,16 @@
+{
+  "before": {
+    "modeAttr": "dark",
+    "storedMode": "dark",
+    "preset": "emerald",
+    "pageBg": "#121212"
+  },
+  "after": {
+    "modeAttr": "light",
+    "storedMode": "dark",
+    "preset": "emerald",
+    "pageBg": "#ffffff"
+  },
+  "consoleErrors": [],
+  "note": "Storage.prototype.setItem was replaced with a throwing stub to simulate a failed preference update."
+}

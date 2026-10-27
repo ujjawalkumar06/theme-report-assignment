@@ -1,0 +1,17 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Playwright artifacts
+test-results/
+blob-report/
+playwright/.cache/
+# playwright-report/ is committed because the assignment requires the HTML execution report
+
+# OS / editor
+.DS_Store
+*.log
