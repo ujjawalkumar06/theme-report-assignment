@@ -5,7 +5,7 @@ Playwright + TypeScript automation for the OomniEye staging assignment. It valid
 **Application:** https://base-application-stage.oomnieye.com
 **Stack:** Playwright 1.64.1 · TypeScript 5.7 · Node.js 22 · Chromium
 **Test result (latest run):** 12 passed — 9 scenarios passing, 3 expected failures that reproduce documented defects (`test.fail`).
-**Repository:** https://github.com/ujjawalkumar06/theme-report-assignment (private; access can be granted to the reviewer)
+**Repository:** https://github.com/ujjawalkumar06/theme-report-assignment (public)
 
 ---
 
