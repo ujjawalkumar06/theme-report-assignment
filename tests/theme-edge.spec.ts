@@ -61,6 +61,10 @@ test.describe('Theme negative & edge cases', () => {
       'DEF-02 (docs/defect-report.md): Emerald light uses the raw accent (#10B981) for the Report ' +
         'breadcrumb and the filter dialog heading, giving ~2.5:1 contrast on white (WCAG AA needs 4.5:1).',
     );
+    testInfo.annotations.push({
+      type: 'known defect',
+      description: 'DEF-02 — Emerald light accent text ≈2.54:1 (WCAG AA requires 4.5:1)',
+    });
 
     await app.themeStudio.applyTheme(PRESETS.emerald, 'light');
     await app.themeStudio.close('report');
@@ -105,6 +109,10 @@ test.describe('Theme negative & edge cases', () => {
       'DEF-03 (docs/defect-report.md): a persisted mode outside light|dark crashes hydration with ' +
         '"Cannot read properties of undefined (reading \'disabled\')" and renders a blank screen until storage is cleared.',
     );
+    testInfo.annotations.push({
+      type: 'known defect',
+      description: 'DEF-03 — unsupported persisted mode crashes hydration and blanks the app',
+    });
 
     await applyBaseTheme(app);
 
@@ -146,6 +154,10 @@ test.describe('Theme negative & edge cases', () => {
         'DEF-01 (docs/defect-report.md): theme is applied in memory but not persisted; the failure is ' +
           'silent (no user-visible feedback) and the theme reverts on reload.',
       );
+      testInfo.annotations.push({
+        type: 'known defect',
+        description: 'DEF-01 — failed preference write silently diverges UI and storage',
+      });
 
       await applyBaseTheme(app);
       const before = await readThemeSnapshot(app.page);
