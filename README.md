@@ -27,7 +27,8 @@ Requirements TH-01…TH-07 pass. TH-08 revealed two persistence/safety failures 
 See:
 - `docs/exploration.md` — application exploration, real selectors, theme mechanism, assumptions
 - `docs/test-cases.md` — scenario table with steps, expected/actual
-- `docs/defect-report.md` — DEF-01/02/03 with reproduction, RCA and fixes
+- `docs/e2e-test-cases.md` — 35 end-to-end cases (module, priority, steps, data, expected, status)
+- `docs/defect-report.md` — DEF-01/02/03/04 with reproduction, RCA and fixes
 - `docs/evidence/` — screenshots and raw observations
 
 ---
@@ -104,6 +105,7 @@ theme-report-assignment/
 ├── docs/
 │   ├── exploration.md
 │   ├── test-cases.md
+│   ├── e2e-test-cases.md
 │   ├── defect-report.md
 │   └── evidence/
 ├── playwright.config.ts
