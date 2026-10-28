@@ -188,11 +188,12 @@ Artifacts: `playwright-report/index.html` (open with `npm run report`), traces/v
 
 ## 7. E2E catalogue and automation coverage
 
-- **Canonical catalogue:** `docs/e2e-test-cases.csv` — 129 cases (105 Pass, 4 Fail, 1 Blocked, 19 Not Run).
+- **Canonical catalogue:** `docs/e2e-test-cases.csv` — 129 cases (123 Pass, 6 Fail, 0 Blocked, 0 Not Run).
 - **Automation:** `tests/e2e/` contains real tests for the safe/executed cases and explicit skipped declarations for not-run/destructive/blocked cases.
 - **Mapping:** `docs/e2e-automation-map.md` lists every spec and the case IDs it covers.
+- **Status distinction:** the CSV status reflects **execution** (including manual verification); the Playwright report reflects **automated coverage**, so manually verified cases still appear as skipped in the automation report until their tests are implemented.
 - **Defects:** the four expected-failure tests reproduce DEF-01…DEF-04 with evidence attachments.
-- **Blocked export:** PDF/XLSX/JSON downloads show a success toast but no file is captured in headless Chromium; retest in a headed browser before filing a product defect.
+- **Exports:** Excel and JSON download correctly; **PDF shows a success toast but produces no file and hangs the page** (DEF-05). The remaining formerly Not Run cases were executed manually; automation for them is still marked skipped (see the automation map).
 
 ---
 
@@ -204,6 +205,7 @@ Artifacts: `playwright-report/index.html` (open with `npm run report`), traces/v
 | DEF-02 | Medium | Emerald light mode uses the raw accent `#10B981` for headings/breadcrumbs → ≈ 2.54:1 on white (WCAG AA requires 4.5:1). |
 | DEF-01 | Low | A failed `localStorage` write is silent: UI applies the new theme, storage keeps the old one, and the theme reverts on reload. |
 | DEF-04 | Low | Sort → `Clear all` does not close the Sort panel (contrary to its accessible name) and keeps the applied sort until an explicit Save. |
+| DEF-05 | Medium | Report PDF export shows `Export completed successfully (PDF)` but produces no file and hangs the page; Excel/JSON downloads work. |
 
 Full reproduction, expected/actual, evidence and RCA: `docs/defect-report.md`.
 

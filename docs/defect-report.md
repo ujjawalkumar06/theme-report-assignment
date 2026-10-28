@@ -180,6 +180,51 @@ Raw state: `docs/evidence/DEF-01-observations.json`
 
 ---
 
+## DEF-05 — Report PDF export reports success but produces no file and hangs the page
+
+| Field | Value |
+|---|---|
+| **ID** | DEF-05 |
+| **Severity** | Medium |
+| **Priority** | P2 |
+| **Component** | Report Module / Export |
+| **Test** | Manual execution 2026-10-28; E2E-RPT-25 |
+| **Status** | Open |
+
+**Preconditions:** Report Module open with data (filtered to 50 rows for the test).
+
+**Steps to reproduce:**
+1. Open `More actions → Export`.
+2. Keep the format as **PDF**.
+3. Click **Download PDF**.
+4. Observe the toast, the download, and the page responsiveness.
+5. Repeat with **Excel (.xlsx)** and **JSON**.
+
+**Expected:** a PDF file downloads, the page remains responsive, and success is shown only after the file is available.
+
+**Actual:**
+- A toast appears: `Export completed successfully (PDF)`.
+- No download event/file is produced.
+- The page becomes unresponsive during PDF generation (both headless and headed Chromium; `body.innerText` timed out after the click).
+- **Excel (.xlsx)** and **JSON** download correctly (`test_2026-10-28.xlsx` / `.json`), so the export dialog and data are valid.
+
+**Impact:** Medium — PDF export is a supported format and is unusable; users can work around it with Excel/JSON.
+
+**Root-cause analysis:** PDF generation appears to run synchronously on the main thread (or crashes the renderer) without a size guard, worker, or failure path. The success toast is shown regardless of whether a blob/download was produced.
+
+**Recommended fix:**
+1. Move PDF generation off the main thread or stream it; add a progress/disabled state.
+2. Only show success after the download is triggered; surface generation errors with a retry.
+3. Add a row-count/size guard and test PDF export in CI (the suite currently cannot capture it).
+
+### Confirmed stakeholder bug
+
+| Bug | Confirmation |
+|---|---|
+| BUG-016 — new user does not appear in the list | Confirmed: the user appears immediately after Save but is **absent after reload** (client-side state only), consistent with BUG-002. |
+
+---
+
 ## Observations that are not defects
 
 | Observation | Assessment |
