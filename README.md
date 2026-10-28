@@ -4,7 +4,7 @@ Playwright + TypeScript automation for the OomniEye staging assignment. It valid
 
 **Application:** https://base-application-stage.oomnieye.com
 **Stack:** Playwright 1.64.1 · TypeScript 5.7 · Node.js 22 · Chromium
-**Test result (latest run):** 94 tests — 73 passing, 3 expected failures reproducing defects, 18 skipped (not run / destructive / blocked).
+**Test result (latest run):** 94 tests — 72 passing, 4 expected failures reproducing defects, 18 skipped (not run / destructive / blocked).
 **Repository:** https://github.com/ujjawalkumar06/theme-report-assignment (public)
 
 ---
@@ -170,7 +170,7 @@ Running 94 tests using 1 worker
 Includes:
 - 16 theme/persistence/defect tests (3 expected failures: DEF-01/02/03)
 - 15 auth + shell tests
-- 28 report option tests (19 passed, 9 declared skips)
+- 28 report option tests (18 passed + 1 expected failure DEF-04, 9 declared skips)
 - 14 theme-editor tests (12 passed, 2 declared skips)
 - 13 account/global tests
 - 1 full end-to-end journey
