@@ -190,3 +190,4 @@ Raw state: `docs/evidence/DEF-01-observations.json`
 | Header stays dark in light mode | Caused by **Global Settings → Header Branding** (`#141b3c`), not the theme; treated as intended |
 | Default theme is not written to storage on first visit | By design — the key appears after the first user change |
 | `Reset to defaults` did not visibly change the current preset during exploration | Contract unclear; not asserted; recommend clarifying the expected reset scope with the product owner |
+| Export PDF/XLSX/JSON | PDF shows `Export completed successfully (PDF)` but headless Chromium captures no download and opens no page. Environment-specific (save-dialog/headless); retest in a headed browser before filing a product defect |

@@ -225,3 +225,17 @@ Preview pane: **Dashboard, Operations, Cameras, Reports, Orders, Components**; z
 | DEF-04 | `Clear all` in the Sort panel does not close the panel (contrary to its accessible name) and does not remove the applied sort until an explicit Save | Low |
 
 See `docs/defect-report.md`.
+
+## 11. Additional pages and controls (full E2E exploration)
+
+| Surface | Findings |
+|---|---|
+| Login validation | Wrong password shows `Incorrect email or password.`; Show Password toggles to Hide Password; Forgot password exposes the admin contact guidance; Sign in is disabled until fields are filled |
+| Account Settings (`#/dashboard/account`) | Personal Information (name, role, email, phone, department, organization), Preferences & Privacy (cookie preferences, language, timezone), Active Sessions, Login History, Advanced Settings, Backup & Reset |
+| Menu Item 2 | Routes to the same Account Settings page (placeholder nav item) |
+| Global Settings → Footer | Powered-by placeholder, footer caption, copyright, Footer Links, Add Link, Footer Visibility |
+| Fullscreen | Header button enters/exits browser fullscreen |
+| Session | Login state survives reload (sessionStorage); logout returns to `#/login` |
+| Export | PDF/XLSX/JSON formats offered; PDF shows a success toast but headless Chromium captures no file — retest headed before filing a defect |
+
+The full E2E catalogue lives in `docs/e2e-test-cases.csv`; automation mapping in `docs/e2e-automation-map.md`.

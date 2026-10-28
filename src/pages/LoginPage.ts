@@ -19,6 +19,29 @@ export class LoginPage extends BasePage {
     return this.page.getByRole('button', { name: 'Sign in' });
   }
 
+  get showPasswordButton(): Locator {
+    return this.page.getByRole('button', { name: /Show Password|Hide Password/ });
+  }
+
+  get errorMessage(): Locator {
+    return this.page.getByText('Incorrect email or password.', { exact: true });
+  }
+
+  get rememberMe(): Locator {
+    return this.page.getByRole('checkbox', { name: 'Remember me' });
+  }
+
+  get forgotPasswordLink(): Locator {
+    return this.page.getByRole('link', { name: 'Forgot password?' });
+  }
+
+  async loginExpectingError(email: string, password: string): Promise<void> {
+    await this.emailInput.fill(email);
+    await this.passwordInput.fill(password);
+    await this.signInButton.click();
+    await expect(this.errorMessage).toBeVisible();
+  }
+
   async goto(): Promise<void> {
     await this.page.goto(ROUTES.login);
     await expect(this.emailInput).toBeVisible();

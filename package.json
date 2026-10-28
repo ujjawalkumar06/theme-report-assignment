@@ -9,7 +9,11 @@
     "test:edge": "playwright test tests/theme-edge.spec.ts",
     "test:headed": "playwright test --headed",
     "typecheck": "tsc --noEmit",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "test:theme": "playwright test tests/theme-*.spec.ts",
+    "test:e2e": "playwright test tests/e2e",
+    "test:defects": "playwright test --grep \"DEF-\"",
+    "e2e:csv": "node scripts/generate-e2e-cases.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

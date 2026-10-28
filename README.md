@@ -1,10 +1,10 @@
 # Theme Update & Report Module Validation
 
-Playwright + TypeScript automation for the OomniEye staging assignment. It validates that changing the application theme is applied, persisted and reflected consistently in the **Report Module**, and documents three confirmed defects found during exploration.
+Playwright + TypeScript automation for the OomniEye staging assignment. It validates that changing the application theme is applied, persisted and reflected consistently in the **Report Module**, and documents four confirmed defects and a 129-case E2E catalogue.
 
 **Application:** https://base-application-stage.oomnieye.com
 **Stack:** Playwright 1.64.1 · TypeScript 5.7 · Node.js 22 · Chromium
-**Test result (latest run):** 16 tests — 13 passing, 3 expected failures that reproduce documented defects (`test.fail`).
+**Test result (latest run):** 94 tests — 73 passing, 3 expected failures reproducing defects, 18 skipped (not run / destructive / blocked).
 **Repository:** https://github.com/ujjawalkumar06/theme-report-assignment (public)
 
 ---
@@ -18,7 +18,10 @@ Playwright + TypeScript automation for the OomniEye staging assignment. It valid
 | Cross-module consistency | Dashboard vs Report fingerprint (`data-theme-mode`, `--page-bg`, `--text-main`, `--primary`, `--secondary`, card/border tokens) |
 | Report Module UI | Table header/body, toolbar, filter dialog, body background, controls |
 | Negative / edge | Unsupported preset, unsupported mode, failed preference write, first-visit baseline |
-| Report Module options | Every toolbar/row/pagination/New User option exercised; functional Report flows documented as manual cases |
+| Report Module options | View/search/sort/filter/columns/list-grid/pagination/rows-per-page/export/grouping/audit/schedules/row actions/New User |
+| Login & shell | Valid/invalid login, show-hide password, forgot-password guidance, deep-link redirect, logout, sidebar, fullscreen, header panels |
+| Account & Global Settings | Account Settings sections, profile menu, Global Settings tabs, footer links |
+| Catalogue & automation | 129 E2E cases (`docs/e2e-test-cases.csv`) mapped to automated specs and skipped declarations |
 | Accessibility | Accent text contrast in light mode |
 | Evidence | Failed-write screenshot/state, blank-screen screenshot, low-contrast screenshot |
 
@@ -27,7 +30,8 @@ Requirements TH-01…TH-07 pass. TH-08 revealed two persistence/safety failures 
 See:
 - `docs/exploration.md` — application exploration, real selectors, theme mechanism, assumptions
 - `docs/test-cases.md` — scenario table with steps, expected/actual
-- `docs/e2e-test-cases.md` — 35 end-to-end cases (module, priority, steps, data, expected, status)
+- `docs/e2e-test-cases.csv` — canonical catalogue: 129 cases (ID, module, priority, scenario, pre-conditions, steps, data, expected, status)
+- `docs/e2e-automation-map.md` — case IDs → automated specs
 - `docs/defect-report.md` — DEF-01/02/03/04 with reproduction, RCA and fixes
 - `docs/evidence/` — screenshots and raw observations
 
@@ -66,6 +70,10 @@ npm run report           # open the HTML report
 | `npm test` | Run all tests with list + HTML reporters |
 | `npm run test:report` | Happy-path suite (`tests/theme-report.spec.ts`) |
 | `npm run test:edge` | Negative/edge suite (`tests/theme-edge.spec.ts`) |
+| `npm run test:e2e` | End-to-end platform suite (`tests/e2e/**`) |
+| `npm run test:theme` | Theme-focused suites |
+| `npm run test:defects` | Only the expected-failure defect tests |
+| `npm run e2e:csv` | Regenerate the E2E CSV catalogue |
 | `npm run test:headed` | Run with a visible browser |
 | `npm run typecheck` | TypeScript strict check |
 | `npm run report` | Open the last HTML report |
@@ -84,8 +92,15 @@ npx playwright test -g "DEF-03"
 ```
 theme-report-assignment/
 ├── tests/
-│   ├── theme-report.spec.ts     # TH-01 … TH-07
-│   └── theme-edge.spec.ts       # EDGE-01, TH-08a/b/c, DEF-02, DEF-03
+│   ├── theme-report.spec.ts     # TH-01 … TH-12
+│   ├── theme-edge.spec.ts       # EDGE-01, TH-08a/b/c, DEF-01/02/03
+│   └── e2e/
+│       ├── auth-shell.spec.ts
+│       ├── report-options.spec.ts
+│       ├── theme-options.spec.ts
+│       ├── account-global.spec.ts
+│       ├── journey.spec.ts
+│       └── declared-cases.spec.ts   # not-run/destructive cases (skipped)
 ├── src/
 │   ├── config/
 │   │   ├── env.ts               # .env loading, routes
@@ -105,9 +120,12 @@ theme-report-assignment/
 ├── docs/
 │   ├── exploration.md
 │   ├── test-cases.md
-│   ├── e2e-test-cases.md
+│   ├── e2e-test-cases.csv
+│   ├── e2e-automation-map.md
 │   ├── defect-report.md
 │   └── evidence/
+├── scripts/
+│   └── generate-e2e-cases.mjs
 ├── playwright.config.ts
 ├── package.json
 ├── tsconfig.json
@@ -142,33 +160,38 @@ theme-report-assignment/
 ## 6. Execution summary
 
 ```
-Running 16 tests using 1 worker
+Running 94 tests using 1 worker
 
-✓ EDGE-01  first visit without stored preferences renders a consistent theme
-✓ TH-08a   unsupported persisted preset does not break the Report Module
-✘ DEF-02   accent text must meet WCAG AA contrast in light mode              (expected failure)
-✘ DEF-03   unsupported persisted mode must not blank the application         (expected failure)
-✘ TH-08b   failed preference write must not leave session/storage out of sync (expected failure)
-✓ TH-01    changing the theme from the Dashboard applies it immediately
-✓ TH-02    Report Module reflects the theme selected on the Dashboard
-✓ TH-03    Report Module keeps the theme after a refresh
-✓ TH-04    theme stays consistent across Dashboard and Report navigation
-✓ TH-05    selecting a second theme replaces the previous selection in the Report Module
-✓ TH-06    a new tab opened after the change applies the persisted theme
-✓ TH-07    Report Module surfaces, text and controls stay readable and themed
-✓ TH-09    every supported preset applies its documented tokens in both modes
-✓ TH-10    a custom brand colour applies and persists
-✓ TH-11    a custom theme can be saved and applied again
-✓ TH-12    Reset to defaults restores Emerald light and clears customisations
+76 passed
+18 skipped
+0 failed
+8.5m
 
-16 passed (13 passing + 3 expected failures)
+Includes:
+- 16 theme/persistence/defect tests (3 expected failures: DEF-01/02/03)
+- 15 auth + shell tests
+- 28 report option tests (19 passed, 9 declared skips)
+- 14 theme-editor tests (12 passed, 2 declared skips)
+- 13 account/global tests
+- 1 full end-to-end journey
+- 7 declared not-run cases
 ```
 
 Artifacts: `playwright-report/index.html` (open with `npm run report`), traces/video/screenshots under `test-results/`, defect evidence under `docs/evidence/`.
 
 ---
 
-## 7. Defects found (summary)
+## 7. E2E catalogue and automation coverage
+
+- **Canonical catalogue:** `docs/e2e-test-cases.csv` — 129 cases (105 Pass, 4 Fail, 1 Blocked, 19 Not Run).
+- **Automation:** `tests/e2e/` contains real tests for the safe/executed cases and explicit skipped declarations for not-run/destructive/blocked cases.
+- **Mapping:** `docs/e2e-automation-map.md` lists every spec and the case IDs it covers.
+- **Defects:** the four expected-failure tests reproduce DEF-01…DEF-04 with evidence attachments.
+- **Blocked export:** PDF/XLSX/JSON downloads show a success toast but no file is captured in headless Chromium; retest in a headed browser before filing a product defect.
+
+---
+
+## 8. Defects found (summary)
 
 | ID | Severity | Summary |
 |---|---|---|
@@ -181,7 +204,7 @@ Full reproduction, expected/actual, evidence and RCA: `docs/defect-report.md`.
 
 ---
 
-## 8. Assumptions and limitations
+## 9. Assumptions and limitations
 
 **Assumptions**
 - The theme preference is a per-browser setting; the application has no theme API and the brief does not require account-level sync. The absence of server persistence is treated as design.
@@ -200,14 +223,14 @@ Full reproduction, expected/actual, evidence and RCA: `docs/defect-report.md`.
 
 ---
 
-## 9. Security notes
+## 10. Security notes
 
 - Credentials are read from `.env` at runtime; `.env` is ignored by `.gitignore` and is **not** part of the deliverable.
 - No credentials appear in page objects, tests, configuration, screenshots or reports.
 - The HTML report/traces contain application pages only; no password fields are captured after submission.
 - `.env.example` contains placeholders only.
 
-## 10. Recommended next steps
+## 11. Recommended next steps
 
 1. Fix DEF-03 (validate/coerce persisted theme state, add error boundary) — highest risk.
 2. Fix DEF-02 by deriving accessible accent text tokens and adding a contrast gate for every preset × mode.
@@ -218,7 +241,7 @@ Full reproduction, expected/actual, evidence and RCA: `docs/defect-report.md`.
 
 ---
 
-## 11. AI tool usage disclosure
+## 12. AI tool usage disclosure
 
 AI tooling was used as an assistant during this assignment. The brief explicitly permits AI tools and asks for this disclosure.
 

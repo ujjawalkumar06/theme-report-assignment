@@ -54,4 +54,39 @@ export abstract class BasePage {
   async currentThemeMode(): Promise<string | null> {
     return this.page.evaluate(() => document.documentElement.getAttribute('data-theme-mode'));
   }
+
+  get accountButton(): Locator {
+    return this.page.locator('[title="Account"], [aria-label="Account"]').first();
+  }
+
+  get globalSettingsButton(): Locator {
+    return this.page.locator('button[title="Global Settings"]').first();
+  }
+
+  get notificationsButton(): Locator {
+    return this.page.locator('button[title="Notifications"]').first();
+  }
+
+  get helpButton(): Locator {
+    return this.page.getByRole('button', { name: 'Open help panel' });
+  }
+
+  get fullscreenButton(): Locator {
+    return this.page.locator('button[title="Fullscreen Mode"]').first();
+  }
+
+  async openAccountMenu(): Promise<void> {
+    await this.accountButton.click();
+    await expect(this.page.getByText('Sign Out', { exact: true })).toBeVisible();
+  }
+
+  async signOut(): Promise<void> {
+    await this.openAccountMenu();
+    await this.page.getByText('Sign Out', { exact: true }).click();
+    await expect(this.page).toHaveURL(/\/#\/login/);
+  }
+
+  async expectToast(text: string | RegExp): Promise<void> {
+    await expect(this.page.getByText(text).first()).toBeVisible();
+  }
 }
