@@ -1,0 +1,67 @@
+"Bug ID","Module","Title","Description","Steps to Reproduce","Actual Result","Expected Result","Severity","Priority","Status","Environment","Application URL","Notes"
+"BUG-001","Global Issues","Save and Discard buttons are not visible in forms","The Save and Discard buttons are not visible by default in any form.","1. Open any form.
+2. Observe the available action buttons.
+3. Click the Close button.","The Save and Discard buttons appear only after clicking the Close button.","The Save and Discard buttons should be displayed appropriately whenever a form contains changes that need to be saved or discarded.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-002","Global Issues","Backend integration is missing","Application functionality appears to be handled entirely on the UI, with no backend integration.","1. Open the application.
+2. Change data in any module.
+3. Refresh or reopen the page and inspect persistence.","Changes and data are handled only on the UI and are not persisted or reflected through backend services.","All relevant functionalities should be integrated with the backend, and data should be saved, retrieved, and updated correctly.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; broad cross-module issue. Needs investigation with backend/API logs."
+"BUG-003","Top Header","OmniEye logo/icon is not clickable","The OmniEye icon in the top-left corner of the header is not working.","1. Open the application.
+2. Click the OmniEye icon in the top-left corner.","Nothing happens after clicking the icon.","The icon should perform its intended action, such as navigating to the default dashboard or home page.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-004","Sidebar","Sidebar open/close button is not user-friendly","The sidebar open/close button is not intuitive or user-friendly.","1. Open the sidebar.
+2. Locate the open/close control.
+3. Observe its interaction and feedback.","The button's functionality or interaction is not clear to the user.","The button should have a clear visual indication and provide an intuitive way to open and close the sidebar.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-005","Sidebar","Sidebar lock/unlock functionality is not user-friendly","The sidebar lock/unlock functionality is not intuitive.","1. Open the sidebar.
+2. Locate the lock/unlock control.
+3. Attempt to lock and unlock the sidebar.","The lock/unlock interaction is not clear to the user.","The lock/unlock control should clearly indicate the current state and allow users to understand whether the sidebar is locked or unlocked.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-006","Sidebar","Sidebar Menu Item 2 is not clickable","The second menu item in the sidebar is not clickable.","1. Open the sidebar.
+2. Click the second menu item.","The menu item does not respond to the click.","The menu item should be clickable and navigate to the corresponding page or perform its intended action.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-007","Sidebar","Dashboard preview flickers after opening Theme Studio","The dashboard preview flickers after clicking Theme Studio.","1. Open the Dashboard.
+2. Click Theme Studio.
+3. Observe the dashboard preview.","The dashboard preview flickers after opening Theme Studio.","The dashboard preview should load and remain stable without flickering.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-008","Dashboard - Video Player","Video does not start from the beginning","After a user logs in, the video starts playing or appears at the 23-second mark instead of 00:00.","1. Log in to the application.
+2. Navigate to the Dashboard.
+3. Observe the video playback position.","The video starts or appears at approximately 00:23.","The video should start from 00:00 when playback is initiated for a new session.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-009","Dashboard - Video Player","Player controls show paused while the preview video is playing","The playback state displayed in the player controls does not match the actual video preview state.","1. Open the Dashboard.
+2. Observe the player controls and the video preview simultaneously.","The player controls indicate that the video is paused, but the preview video continues playing.","The player controls and video preview should always reflect the same playback state.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-010","Dashboard - Video Player","Video timeline seeking does not work correctly","Seeking to a different timestamp in the video timeline does not correctly update the playback position.","1. Open the Dashboard.
+2. Allow the video to play until approximately 00:07.
+3. Seek back to 00:00 using the video timeline.
+4. Observe the playback timer and preview.","The video does not restart from 00:00 correctly. The playback timer continues from the previous position, and the preview changes inconsistently.","When a user seeks to 00:00, the video should return to the beginning, and the playback timer and preview should update accordingly.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-011","Dashboard - Video Player","Playback speed icon does not update","The playback speed control icon does not change appropriately when the user opens the settings menu.","1. Open the Dashboard.
+2. Click the Settings button in the video player.
+3. Observe the playback speed control icon.","The playback speed control appears, but the icon does not change as expected.","The playback speed icon should update appropriately to reflect the playback speed control's state or selected option.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-012","Dashboard - Video Player","Playback speed selection does not affect video speed","Selecting a different playback speed does not change the actual video playback speed.","1. Open the Dashboard.
+2. Click the Settings button.
+3. Select a playback speed of 0.25x.
+4. Observe the video playback.","The video continues playing at normal speed instead of 0.25x.","The video should play at the selected speed of 0.25x.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-013","Dashboard - Video Player","Inconsistent scrollbar behavior between Appearance and Brand & Content","The scrollbar visibility changes unexpectedly when navigating between the Appearance and Brand & Content sections.","1. Open Theme Studio.
+2. Click Appearance.
+3. Observe the scrollbar.
+4. Click Brand & Content.
+5. Observe the scrollbar again.","The scrollbar disappears in the Appearance section but reappears in the Brand & Content section.","Scrollbar behavior should remain consistent across sections and follow the intended UI design.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-014","Dashboard - Video Player","CC and HD buttons are not working","The CC (Closed Captions) and HD buttons in the video player are not functional.","1. Open the Dashboard.
+2. Click the CC button.
+3. Click the HD button.
+4. Observe the video player.","Neither button performs its intended action.","CC: The button should enable or disable closed captions, where supported.
+HD: The button should allow users to select or enable the appropriate video quality, where supported.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/overview","As reported; severity/priority pending assessment"
+"BUG-015","Report Builder","Save button is missing when adding a user","The Save button is not visible when adding a new user in Report Builder.","1. Open Report Builder.
+2. Navigate to the Add User section.
+3. Enter the required user details.
+4. Observe the available action buttons.","The Save button is missing.","A Save button should be available to allow users to save the newly added user's details.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/reports","As reported; severity/priority pending assessment"
+"BUG-016","Report Builder","Newly added user does not appear in the user list","A newly added user does not appear in the user list after the save action.","1. Open Report Builder.
+2. Navigate to Add User.
+3. Enter the required user details.
+4. Click the Close (X) button.
+5. Click Save when the Save and Discard options appear.
+6. Check the user list.","The newly added user does not appear in the list. The issue appears to be related to missing backend integration or data persistence.","After successfully saving a new user, the user should appear in the list, and the data should persist when the page is refreshed or reopened.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/reports","As reported; likely related to BUG-002 (backend integration)."
+"BUG-017","Report Builder","Saved current view cannot be accessed or applied","The Save Current View option does not provide a way to access or apply a previously saved view.","1. Open Report Builder.
+2. Select the Save Current View option.
+3. Save the current view.
+4. Look for an option to access or apply the saved view.","There is no visible option to select or apply the previously saved view.","Users should be able to access, select, and apply previously saved views through an appropriate interface.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/reports","As reported; severity/priority pending assessment"
+"BUG-018","Theme Studio","Download theme option does not prompt the user to select a theme","Clicking Download Theme downloads the currently selected theme without prompting the user to confirm or select which theme to download.","1. Open Theme Studio.
+2. Click Download Theme.
+3. Observe the download behavior.","The currently selected theme is downloaded immediately without asking the user which theme they want to download.","The application should provide an appropriate prompt or selection interface that allows the user to choose the theme to download, if multiple themes are available.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/reports?themeStudio=true","As reported; severity/priority pending assessment"
+"BUG-019","Theme Studio","Save button is not easily accessible when customizing a theme","When a user customizes a theme, the Save button is located inside Theme Settings > My Theme > Save, making it difficult to access.","1. Open Theme Studio.
+2. Select a theme.
+3. Customize the theme.
+4. Look for the Save button.","The Save button is available only under Theme Settings > My Theme > Save.","A Save button should be displayed prominently at the top of the interface when a user modifies or customizes a theme, allowing changes to be saved easily.","TBD","TBD","Open","Staging","https://base-application-stage.oomnieye.com/#/dashboard/reports?themeStudio=true","As reported; severity/priority pending assessment"

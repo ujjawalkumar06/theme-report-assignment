@@ -32,6 +32,7 @@ See:
 - `docs/test-cases.md` — scenario table with steps, expected/actual
 - `docs/e2e-test-cases.csv` — canonical catalogue: 129 cases (ID, module, priority, scenario, pre-conditions, steps, data, expected, status)
 - `docs/e2e-automation-map.md` — case IDs → automated specs
+- `docs/bug-issue-sheet.csv` — 19 reported issues with steps, actual/expected results, severity/priority TBD
 - `docs/defect-report.md` — DEF-01/02/03/04 with reproduction, RCA and fixes
 - `docs/evidence/` — screenshots and raw observations
 
@@ -122,6 +123,7 @@ theme-report-assignment/
 │   ├── test-cases.md
 │   ├── e2e-test-cases.csv
 │   ├── e2e-automation-map.md
+│   ├── bug-issue-sheet.csv
 │   ├── defect-report.md
 │   └── evidence/
 ├── scripts/
@@ -201,6 +203,23 @@ Artifacts: `playwright-report/index.html` (open with `npm run report`), traces/v
 | DEF-04 | Low | Sort → `Clear all` does not close the Sort panel (contrary to its accessible name) and keeps the applied sort until an explicit Save. |
 
 Full reproduction, expected/actual, evidence and RCA: `docs/defect-report.md`.
+
+### Reported issue sheet (19 issues)
+
+`docs/bug-issue-sheet.csv` captures the stakeholder-reported issues:
+
+| Module | Issues |
+|---|---:|
+| Global Issues | 2 |
+| Top Header | 1 |
+| Sidebar | 4 |
+| Dashboard – Video Player | 7 |
+| Report Builder | 3 |
+| Theme Studio | 2 |
+| **Total** | **19** |
+
+Severity and priority are intentionally **TBD** in the sheet pending assessment, as stated in the source report. BUG-002 (backend integration) and BUG-016 (new user not persisted) are flagged as related and require backend investigation.
+
 
 ---
 
