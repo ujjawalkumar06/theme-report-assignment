@@ -32,6 +32,7 @@ See:
 - `docs/test-cases.md` — scenario table with steps, expected/actual
 - `docs/e2e-test-cases.csv` — canonical catalogue: 129 cases (ID, module, priority, scenario, pre-conditions, steps, data, expected, status)
 - `docs/e2e-automation-map.md` — case IDs → automated specs
+- `docs/automated-test-list.md` / `.csv` — the 94 automated tests with status
 - `docs/bug-issue-sheet.csv` — 19 reported issues with steps, actual/expected results, severity/priority TBD
 - `docs/defect-report.md` — DEF-01/02/03/04 with reproduction, RCA and fixes
 - `docs/evidence/` — screenshots and raw observations
@@ -123,6 +124,8 @@ theme-report-assignment/
 │   ├── test-cases.md
 │   ├── e2e-test-cases.csv
 │   ├── e2e-automation-map.md
+│   ├── automated-test-list.md
+│   ├── automated-test-list.csv
 │   ├── bug-issue-sheet.csv
 │   ├── defect-report.md
 │   └── evidence/
